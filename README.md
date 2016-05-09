@@ -29,5 +29,7 @@
 	├── cache.class.php
     └── controller.class.php
 
-
+------------------------------------------
+2016年05月09日23:59:40
+完成最简单的控制器加载、实例化db，载入file\controller\model\db等方法及class
 
