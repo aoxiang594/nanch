@@ -1,4 +1,5 @@
 <?php
+//Nanch入口文件
 date_default_timezone_set('Asia/Shanghai');
 if(!defined('APP_ROOT_DIR')){
 	exit("Not defined APP_ROOT_DIR.");
@@ -18,3 +19,11 @@ define('CORE_DIR',    dirname(__FILE__));//library公共的核心库文件
 #	define('MODEL_DIR',   ROOT_PATH.'/model');//公共的模型目录
 #}
 require CORE_DIR.'/function.php';
+require CORE_DIR.'/request.php';
+require CORE_DIR.'/db.php';
+require CORE_DIR.'/controller.php';
+require CORE_DIR.'/model.php';
+require CORE_DIR.'/library/build.php';
+
+require CORE_DIR.'/nanch.php';
+?>

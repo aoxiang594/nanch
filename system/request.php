@@ -6,153 +6,71 @@
  * @Time:2016年05月06日14:58:02
  */
 class request{
+    public $_uri;
+    public $_module = 'index';
+    public $_action = 'index';
+    public $_controller = 'index';
+    function __construct()
+    {
+        $this->_uri = $_SERVER['REQUEST_URI'];
+        $this->set_path_info();
+    }
+    public function get_uri()
+    {
+        return $this->_uri;
+    }
+
+    public function set_module($module = false)
+    {
+
+        $this->_module = $module?$module:$this->_module;
+    }
+    public function get_module()
+    {
+        return $this->_module;
+    }
+
+    public function set_action($action = false)
+    {
+        $this->_action = $action?$action:$this->_action;
+    }
+    public function get_action()
+    {
+        return $this->_action;   
+    }
+
+    public function set_contoller($controller = false)
+    {
+        $this->_contoller = $controller?$controller:$this->_contoller;
+    }
+    public function get_contoller()
+    {
+        return $this->_controller;
+    }
 
 
-    public static function get($query)
+    /**
+     * [set_path_info 从path中获取到module、action、controller以及其他信息]
+     * @param [type] $path_info [description]
+     */
+    public function set_path_info($path_info = null)
     {
-        $url = $query["url"];
-        $reqheaders = $query["reqheaders"];
-        $response = self::_query("GET",$url,null,$reqheaders);
-        return $response;
-    }
-    public static function delete($query)
-    {
-        $url = $query["url"];
-        $reqheaders = $query["reqheaders"];
-        $response = self::_query("DELETE",$url,null,$reqheaders);
-        return $response;
-    }
-    public static function post($query)
-    {
-        $url = $query["url"];
-        $data = is_array($query["data"]) ? http_build_query($query["data"]) : null;
-        $reqheaders = $query["reqheaders"];
-        $response = self::_query("POST",$url,$data,$reqheaders);
-        return $response;
-    }
-    public static function put($query)
-    {
-        $url = $query["url"];
-        $data = is_array($query["data"]) ? http_build_query($query["data"]) : null;
-        $reqheaders = $query["reqheaders"];
-        $response = self::_query("PUT",$url,$data,$reqheaders);
-        return $response;
-    }
-    public static function postFile($query)
-    {
-        $url = $query["url"];
-        $data = $query["data"];
-        $files = $data["__uploadfiles__"];
-        $reqheaders = is_array($query["reqheaders"])?$query["reqheaders"]:array();
-        if( !is_array($files) )
-        {
-            unset($data["__uploadfiles__"]);
-            return self::post($query);
-        }
-        $multipart_boundary = '--------------------------'.microtime(true);
-        $reqheaders[] = 'Content-Type: multipart/form-data; boundary='.$multipart_boundary;
-        $content = self::createMultpartFileData($multipart_boundary,$files);
-        // add some POST fields to the request too: $_POST['foo'] = 'bar'
-        unset($data["__uploadfiles__"]);
-        foreach($data as $key => $val )
-        {
-            $content .= "--".$multipart_boundary."\r\n".
-                "Content-Disposition: form-data; name=\"".rawurlencode($key)."\"\r\n\r\n".
-                rawurlencode($val)."\r\n";
-        }
-        // signal end of request (note the trailing "--")
-        $content .= "--".$multipart_boundary."--\r\n";
-        $header = implode("\r\n",$reqheaders);
-        $context = stream_context_create(array(
-            'http' => array(
-                'method' => 'POST',
-                'header' => $header,
-                'content' => $content,
-            )
-        ));
-        return file_get_contents($url, false, $context);
-    }
-    public static function getFile($url,$outfile)
-    {
-        $response = self::_query("GET",$url);
-        file_put_contents($outfile,$response);
-    }
-    private static function _query($method,$url,$data=null,$reqheaders=null,$timeout=20)
-    {
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $url);
-        if(!empty($reqheaders) && is_array($reqheaders))
-        {
-            curl_setopt($ch, CURLOPT_HTTPHEADER, $reqheaders);
-        }
-        curl_setopt($ch, CURLOPT_VERBOSE, 1);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
-        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $timeout);
-        switch($method)
-        {
-            case "GET" :
-                curl_setopt($ch, CURLOPT_HTTPGET, true);
-                break;
-            case "POST":
-                curl_setopt($ch, CURLOPT_POST,true);
-                curl_setopt($ch, CURLOPT_POSTFIELDS,$data);
-                break;
-            case "PUT" :
-                curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "PUT");
-                curl_setopt($ch, CURLOPT_POSTFIELDS,$data);
-                break;
-            case "DELETE":
-                curl_setopt ($ch, CURLOPT_CUSTOMREQUEST, "DELETE");
-                break;
-            default :
-                curl_setopt($ch, CURLOPT_HTTPGET, true);
-                break;
-        }
-        $response = curl_exec($ch);//获得返回值
-        curl_close($ch);
-        return $response;
-    }
-    private static function createMultpartFileData($multipart_boundary,$files)
-    {
-        $content = "";
-        foreach($files as $key => $_fileParam)
-        {
-            if( is_array($_fileParam))
-            {
-                foreach( $_fileParam as $_file )
-                {
-                    if( $_file instanceof \CURLFile )
-                    {
-                        $content.="--".$multipart_boundary."\r\n".
-                            "Content-Disposition: form-data; name=\"".$key."\"; filename=\"".$_file->getPostFilename()."\"\r\n".
-                            "Content-Type: ".$_file->getMimeType()."\r\n\r\n".
-                            file_get_contents($_file->getFilename())."\r\n";
-                    }
-                    else if( $_filepath = realpath($_file) )
-                    {
-                        $content.="--".$multipart_boundary."\r\n".
-                            "Content-Disposition: form-data; name=\"".$key."\"; filename=\"".basename($_filepath)."\"\r\n".
-                            "Content-Type: ".mime_content_type($_filepath)."\r\n\r\n".
-                            file_get_contents($_filepath)."\r\n";
-                    }
-                }
-            }
-            else if( $_fileParam instanceof \CURLFile )
-            {
-                $content.="--".$multipart_boundary."\r\n".
-                    "Content-Disposition: form-data; name=\"".$key."\"; filename=\"".$_fileParam->getPostFilename()."\"\r\n".
-                    "Content-Type: ".$_fileParam->getMimeType()."\r\n\r\n".
-                    file_get_contents($_fileParam->getFilename())."\r\n";
-            }
-            else if( $_filepath = realpath($_fileParam) )
-            {
-                $content.="--".$multipart_boundary."\r\n".
-                    "Content-Disposition: form-data; name=\"".$key."\"; filename=\"".basename($_filepath)."\"\r\n".
-                    "Content-Type: ".mime_content_type($_filepath)."\r\n\r\n".
-                    file_get_contents($_filepath)."\r\n";
-            }
-        }
-        return $content;
+        // if ($pathInfo === null) {
+        //     $baseUrl = $this->getBaseUrl();
+        //     $requestUri = $this->getRequestUri();
+        //     if ($pos = strpos($requestUri, '?')) {
+        //         $requestUri = substr($requestUri, 0, $pos);
+        //     }
+        //     $pathInfo = $requestUri;//substr($requestUri, strlen($baseUrl));
+        // }
+        // $this->_pathInfo = (string) $pathInfo;
+        // return $this;
+        
+
+        $this->_controller = empty(get("c"))?$this->_controller:get("c");
+        $this->_action = empty(get("a"))?$this->_action:get("a");
+        $this->_module = empty(get("m"))?$this->_module:get("m");
+        
     }
 }
+?>

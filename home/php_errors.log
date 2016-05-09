@@ -1,0 +1,11 @@
+[09-May-2016 17:18:51 Asia/Shanghai] PHP Fatal error:  Call to a member function index() on null in /usr/local/var/www/nanch/system/nanch.php on line 22
+[09-May-2016 21:53:34 Asia/Shanghai] PHP Catchable fatal error:  Argument 1 passed to db::__construct() must be of the type array, none given, called in /usr/local/var/www/nanch/system/nanch.php on line 13 and defined in /usr/local/var/www/nanch/system/db.php on line 11
+[09-May-2016 21:53:34 Asia/Shanghai] PHP Catchable fatal error:  Argument 1 passed to db::__construct() must be of the type array, none given, called in /usr/local/var/www/nanch/system/nanch.php on line 13 and defined in /usr/local/var/www/nanch/system/db.php on line 11
+[09-May-2016 21:55:09 Asia/Shanghai] PHP Catchable fatal error:  Argument 1 passed to db::__construct() must be of the type array, none given, called in /usr/local/var/www/nanch/system/nanch.php on line 13 and defined in /usr/local/var/www/nanch/system/db.php on line 9
+[09-May-2016 21:55:09 Asia/Shanghai] PHP Catchable fatal error:  Argument 1 passed to db::__construct() must be of the type array, none given, called in /usr/local/var/www/nanch/system/nanch.php on line 13 and defined in /usr/local/var/www/nanch/system/db.php on line 9
+[09-May-2016 22:12:22 Asia/Shanghai] PHP Fatal error:  Class 'parsent' not found in /usr/local/var/www/nanch/system/model.php on line 9
+[09-May-2016 22:12:22 Asia/Shanghai] PHP Fatal error:  Class 'parsent' not found in /usr/local/var/www/nanch/system/model.php on line 9
+[09-May-2016 22:13:28 Asia/Shanghai] PHP Fatal error:  Class 'parsent' not found in /usr/local/var/www/nanch/system/model.php on line 9
+[09-May-2016 22:13:28 Asia/Shanghai] PHP Fatal error:  Class 'parsent' not found in /usr/local/var/www/nanch/system/model.php on line 9
+[09-May-2016 22:21:20 Asia/Shanghai] PHP Fatal error:  Call to undefined function err_msg() in /usr/local/var/www/nanch/system/db.php on line 13
+[09-May-2016 22:21:20 Asia/Shanghai] PHP Fatal error:  Call to undefined function err_msg() in /usr/local/var/www/nanch/system/db.php on line 13

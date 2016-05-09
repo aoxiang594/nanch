@@ -17,7 +17,12 @@ function dd($param)
     var_dump($param);
     echo "</pre>";
 }
-
+function rr($param)
+{
+    echo "<pre>";
+    print_r($param);
+    echo "</pre>";
+}
 
 function warning($content = "",$where = "")
 {
@@ -60,20 +65,20 @@ function warning($content = "",$where = "")
 
 
 /**
- * [get description]
- * @param  string $name    [description]
- * @param  string $filter  [description]
- * @param  string $default [description]
- * @return [type]          [description]
+ * [get 获取GET过来的值]
+ * @param  string $name    [变量名]
+ * @param  string $filter  [过滤函数]
+ * @param  string $default [默认值]
+ * @return [array||string]          [description]
  */
 function get($name = "",$filter = "htmlspecialchars",$default = "")
-{
-    dd($_GET);exit;
-    if(isset($_GET[$name]))
+{   
+    
+    if(isset($_GET[$name]) && (!empty($_GET[$name]) || $_GET[$name] === "0"))
     {
-        echo __LINE__;
+        $data = $_GET[$name];
         
-        //$data = call_user_func($_GET[$name],$filter);
+        $data = call_user_func("htmlspecialchars",$data);
     }else
     {
         $data = $default;
@@ -81,3 +86,117 @@ function get($name = "",$filter = "htmlspecialchars",$default = "")
 
     return $data;
 }
+
+/**
+ * [post 获取POST过来的值]
+ * @param  string $name    [变量名]
+ * @param  string $filter  [过滤函数]
+ * @param  string $default [默认值]
+ * @return [array||string]          [description]
+ */
+function post($name = "",$filter = "htmlspecialchars",$default = "")
+{   
+    
+    if((isset($_POST[$name]) && !empty($_POST[$name])) || $_POST[$name] === "0")
+    {
+        $data = $_POST[$name];
+        
+        $data = call_user_func("intval",$data);
+    }else
+    {
+        $data = $default;
+    }
+
+    return $data;
+}
+/**
+ * [load_controller description]
+ * @param  string $class_name  [description]
+ * @param  string $module_name [description]
+ * @return [type]              [description]
+ */
+function load_controller($class_name = "",$module_name = "Home")
+{
+    if(!empty($class_name))
+    {
+        $controller_file = CONTROLLER_DIR.'/'.$module_name."/".$class_name.".controller.php";
+        
+        if(file_exists($controller_file))
+        {
+            require  $controller_file;
+            $class_name .= "Controller";
+            $controller = new $class_name;
+            return $controller;
+        }else
+        {
+            error_msg("Can not found Controller[".$class_name."]",false,"error");
+        }
+        
+    }else
+    {
+        error_msg("Controller name is empty",false,"error");
+    }
+    
+}
+
+/**
+ * [load_model description]
+ * @param  string $model_name [description]
+ * @return [type]              [description]
+ */
+function load_model($model_name = "")
+{
+    $model_file = CONTROLLER_DIR.'/'.$model_name.".model.php";
+    if(file_exists($model_file))
+    {
+        require  $model_file;
+    }else
+    {
+
+    }
+}
+
+/**
+ * [load_file description]
+ * @param  string  $file_name [description]
+ * @param  boolean $dir       [description]
+ * @return [type]             [description]
+ */
+function load_file($file_name = "",$dir = false)
+{
+    
+    if(!$dir)
+    {
+        $dir = APP_ROOT_DIR."/config/";
+    }
+    $file = $dir."/".$file_name.".php";
+    if(file_exists($file))
+    {
+        return include_once($file);
+    }
+}
+
+/**
+ * [error_msg description]
+ * @param  string  $msg   [description]
+ * @param  boolean $url   [description]
+ * @param  string  $level [description]
+ * @return [type]         [description]
+ */
+function error_msg($msg = '',$url = false,$level = 'notice')
+{
+    switch($level)
+    {
+        case 'notice':
+            echo $msg;
+            break;
+        case 'error':
+            echo $msg;
+            die();
+            break;
+    }
+    
+}
+
+
+?>
